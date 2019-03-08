@@ -1,0 +1,23 @@
+[
+    {
+        "Scope": "DataThirst1",
+        "Secrets":{
+            "Secret1": "Secret1Value",
+            "Secret2": "Secret2Value"
+        }
+    },
+    {
+        "Scope": "DataThirst2",
+        "Secrets":{
+            "Secret1": "Secret1Value",
+            "Secret2": "Secret2Value"
+        }
+    },
+    {
+        "Scope": "UnitTests",
+        "Secrets":{
+            "Test1": "Value1",
+            "Test2": "Value2"
+        }
+    }
+]

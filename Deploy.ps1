@@ -25,6 +25,7 @@ Remove-Item -Path ./bin/*.py
 
 # Copy the root py file that will be executed by jobsß
 Copy-Item "./src/jobs.py" ./bin
+Copy-Item "./src/simple.py" ./bin
 
 ##### DEPLOY TO DATABRICKS DBFS #####
 
@@ -43,5 +44,11 @@ Add-DatabricksPythonJob -BearerToken $BearerToken -Region $Region -JobName $j -C
 $j = "amazon"
 $PythonParameters = $j
 $MainScript = "dbfs:" + $TargetDBFSFolderCode + "/jobs.py"
+Add-DatabricksPythonJob -BearerToken $BearerToken -Region $Region -JobName $j -ClusterId $ClusterId `
+    -PythonPath $MainScript -PythonParameters $PythonParameters -Verbose
+
+$j = "simple"
+$PythonParameters = $null
+$MainScript = "dbfs:" + $TargetDBFSFolderCode + "/simple.py"
 Add-DatabricksPythonJob -BearerToken $BearerToken -Region $Region -JobName $j -ClusterId $ClusterId `
     -PythonPath $MainScript -PythonParameters $PythonParameters -Verbose
