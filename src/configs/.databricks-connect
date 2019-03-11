@@ -1,0 +1,7 @@
+{
+  "host": "https://<location>.azuredatabricks.net",
+  "port": "8787",
+  "token": "<Token>",
+  "cluster_id": "<ClusterId>",
+  "org_id": "<OrgId>"
+}

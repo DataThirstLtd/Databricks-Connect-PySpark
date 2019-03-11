@@ -1,31 +1,18 @@
+param(
+    [string]$Environment="INT",
+    [string]$Region = "westeurope",
+    [string]$ClusterId = "0307-093126-gaps139",
+    [string]$TargetDBFSFolderCode = "/DatabricksConnectDemo/Code",
+    [string]$BearerToken = ""
+)
 Set-Location $PSScriptRoot
-$BearerToken = Get-Content -Path ./MyBearerToken.txt -Raw # Create this file in the root of your project with just your bearer token in
+
+if ($BearerToken -eq ""){
+    $BearerToken = Get-Content -Path ./MyBearerToken.txt -Raw # Create this file in the root of your project with just your bearer token in
+}
 
 Import-Module azure.databricks.cicd.tools -MinimumVersion 1.1.12 -Force
 
-$Region = "westeurope"
-$ClusterId = "0307-093126-gaps139"
-$TargetDBFSFolderCode = "/DatabricksConnectDemo/Code"
-
-# Create a bin folder to build into
-Remove-Item ./bin -Recurse -Force -ErrorAction:SilentlyContinue
-New-Item ./bin -ItemType Directory -Force | Out-Null
-$folders = Get-ChildItem -Path ./src -Directory -Exclude "__pycache__"
-foreach ($f in $folders){
-    Copy-Item "$f/*.py" ./bin
-}
-
-# Zip up all modules into a flat zip file
-$source = Resolve-Path ./bin/*.py
-$ZipFilePath = "./bin/scripts"
-Compress-Archive -LiteralPath $source -DestinationPath $ZipFilePath 
-
-# Clean up files that were added to the zip
-Remove-Item -Path ./bin/*.py
-
-# Copy the root py file that will be executed by jobsß
-Copy-Item "./src/jobs.py" ./bin
-Copy-Item "./src/simple.py" ./bin
 
 ##### DEPLOY TO DATABRICKS DBFS #####
 
@@ -33,22 +20,24 @@ Copy-Item "./src/simple.py" ./bin
 Remove-DatabricksDBFSItem -BearerToken $BearerToken -Region $Region -Path $TargetDBFSFolderCode
 Add-DatabricksDBFSFile -BearerToken $BearerToken -Region $Region -LocalRootFolder "./bin" -FilePattern "*.*"  -TargetLocation $TargetDBFSFolderCode -Verbose
 
-
-##### CREATE A SMAPLE JOB TO EXECUTE #####
+##### CREATE A SAMPLE JOB TO EXECUTE #####
 $j = "planes"
-$PythonParameters = "$j", 1980, 10
-$MainScript = "dbfs:" + $TargetDBFSFolderCode + "/jobs.py"
+$PythonParameters = "pipelines.jobs.$j", 1980, 10
+$MainScript = "dbfs:" + $TargetDBFSFolderCode + "/main.py"
 Add-DatabricksPythonJob -BearerToken $BearerToken -Region $Region -JobName $j -ClusterId $ClusterId `
-    -PythonPath $MainScript -PythonParameters $PythonParameters -Verbose
+    -PythonPath $MainScript -PythonParameters $PythonParameters -Verbose 
 
 $j = "amazon"
-$PythonParameters = $j
-$MainScript = "dbfs:" + $TargetDBFSFolderCode + "/jobs.py"
+$PythonParameters = "pipelines.jobs.$j"
+$MainScript = "dbfs:" + $TargetDBFSFolderCode + "/main.py"
 Add-DatabricksPythonJob -BearerToken $BearerToken -Region $Region -JobName $j -ClusterId $ClusterId `
-    -PythonPath $MainScript -PythonParameters $PythonParameters -Verbose
+    -PythonPath $MainScript -PythonParameters $PythonParameters -Verbose 
 
 $j = "simple"
 $PythonParameters = $null
-$MainScript = "dbfs:" + $TargetDBFSFolderCode + "/simple.py"
+$MainScript = "dbfs:" + $TargetDBFSFolderCode + "/simpleExecute.py"
 Add-DatabricksPythonJob -BearerToken $BearerToken -Region $Region -JobName $j -ClusterId $ClusterId `
-    -PythonPath $MainScript -PythonParameters $PythonParameters -Verbose
+    -PythonPath $MainScript -PythonParameters $PythonParameters -Verbose 
+
+
+Set-DatabricksSecret -BearerToken $BearerToken -Region $Region -ScopeName "DataThirst1" -SecretName "Secret1" -SecretValue "This is a secret!"
