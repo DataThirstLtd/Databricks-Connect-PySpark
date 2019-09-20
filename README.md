@@ -1,17 +1,18 @@
-[![Build status](https://datathirst.visualstudio.com/Play/_apis/build/status/Databricks-Connect-Practice)](https://datathirst.visualstudio.com/Play/_build/latest?definitionId=21)
+[![Build Status](https://dev.azure.com/datathirst/Public-Demos/_apis/build/status/DataThirstLtd.Databricks-Connect-PySpark?branchName=master)](https://dev.azure.com/datathirst/Public-Demos/_build/latest?definitionId=37&branchName=master)
 
-# Databricks-Connect-Guide
+# Developing with Databricks-Connect & Azure DevOps
 A guide of how to build good Data Pipelines with Databricks Connect using best practices.
+Details: https://datathirst.net/blog/2019/9/20/series-developing-a-pyspark-application
 
 ## About
 This is a sample Databricks-Connect PySpark application that is designed as a template for best practice and useability.
 
 The project is designed for:
-* Python local development in an IDE using Databricks-Connect
+* Python local development in an IDE (VSCode) using Databricks-Connect
 * Well structured PySpark application 
 * Simple data pipelines with reusable code
 * Unit Testing with Pytest
-* Build into a Python Egg
+* Build into a Python Wheel
 * CI Build with Test results published
 * Automated deployments/promotions
 
