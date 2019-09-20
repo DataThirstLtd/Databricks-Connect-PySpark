@@ -15,7 +15,6 @@ steps:
    $s | Set-Content configs/.databricks-connect
    
    Copy-Item "configs/int.config.json" -Destination "configs/config.json"
-
   pwsh: true
   displayName: 'Configure Environment'
 
@@ -52,7 +51,6 @@ steps:
    
    $s = (Get-Content "./setup.py").replace("0.0.1","0.0.$(Build.BuildNumber)") 
    $s | Set-Content "./setup.py"
-
   pwsh: true
   displayName: 'Set Build Number in files'
 
