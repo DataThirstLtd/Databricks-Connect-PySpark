@@ -11,6 +11,10 @@ if ($BearerToken -eq ""){
     $BearerToken = Get-Content -Path ./MyBearerToken.txt -Raw # Create this file in the root of your project with just your bearer token in
 }
 
+if (!(Get-Module azure.databricks.cicd.tools -ListAvailable)){
+    Install-Module azure.databricks.cicd.tools -Force -SkipPublisherCheck
+}
+
 Import-Module azure.databricks.cicd.tools -MinimumVersion 1.1.12 -Force
 
 
