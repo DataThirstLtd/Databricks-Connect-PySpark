@@ -9,13 +9,12 @@ steps:
   inputs:
     versionSpec: '$(python.version)'
 
-- powershell: |
+- pwsh: |
    $s = (Get-Content configs/.databricks-connect).replace('<Token>',"$(DatabricksToken)").replace('<ClusterId>',"$(ClusterId)").replace('<OrgId>',"$(DatabricksOrgId)").replace('<location>',"$(Location)")
    
    $s | Set-Content configs/.databricks-connect
    
    Copy-Item "configs/int.config.json" -Destination "configs/config.json"
-  pwsh: true
   displayName: 'Configure Environment'
 
 - task: CopyFiles@2
@@ -32,7 +31,6 @@ steps:
   displayName: 'Install dependencies'
 
 - script: 'pip install pytest && pytest tests --doctest-modules --junitxml=junit/test-results.xml'
-  workingDirectory: src
   displayName: pytest
   continueOnError: true
 
@@ -44,20 +42,18 @@ steps:
     testRunTitle: 'Python $(python.version)'
   condition: succeededOrFailed()
 
-- powershell: |
-   Write-Output "Setting Build Number 0.0.$(Build.BuildNumber)"
-   $s = (Get-Content "./pipelines/__init__.py").replace("0.0.1","0.0.$(Build.BuildNumber)") 
+- pwsh: |
+   Write-Output "Setting Build Number 0.0.$(Build.BuildID)"
+   $s = (Get-Content "./pipelines/__init__.py").replace("0.0.1","0.0.$(Build.BuildID)") 
    $s | Set-Content "./pipelines/__init__.py"
    
-   $s = (Get-Content "./setup.py").replace("0.0.1","0.0.$(Build.BuildNumber)") 
+   $s = (Get-Content "./setup.py").replace("0.0.1","0.0.$(Build.BuildID)") 
    $s | Set-Content "./setup.py"
-  pwsh: true
   displayName: 'Set Build Number in files'
 
 - script: |
-   cd src
-   python setup.py bdist_egg
-  displayName: 'Build Egg'
+   python setup.py bdist_wheel
+  displayName: 'Build Wheel'
 
 - task: PowerShell@2
   displayName: 'Run Build.ps1'
@@ -65,7 +61,6 @@ steps:
     targetType: filePath
     filePath: ./Build.ps1
     pwsh: true
-    workingDirectory: src
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
