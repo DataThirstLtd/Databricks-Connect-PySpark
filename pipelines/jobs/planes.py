@@ -6,18 +6,16 @@ from pipelines.utils import transformations, configmanagement as cm
 spark = SparkSession.builder.getOrCreate()
 
 def extract_Planes(filePath, year):
-    print(cm.getSecret("DataThirst1","Secret1"))
     return spark.read.format("csv").option("header", "true").load(filePath).filter(col("year") == year)
 
 def transform_Planes(df, dummyValue):
     df = df.withColumn("NewCol", lit(dummyValue)).filter(col("model").isNotNull())
-    df = df.withColumn("time_stamp", lit(current_timestamp()))
+    df = df.withColumn("meta_timestamp", lit(current_timestamp()))
     df = transformations.addDummyColumn(df)
     return df
 
 def load_Planes(df):
-  #cm.setDatabase()
-  df.write.format("delta").mode("overwrite").saveAsTable("planes")
+  df.write.format("parquet").mode("overwrite").saveAsTable("planes")
   return
 
 def etl(year:int, dummyValue:int=99):

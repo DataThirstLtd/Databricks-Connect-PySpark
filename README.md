@@ -15,5 +15,33 @@ The project is designed for:
 * CI Build with Test results published
 * Automated deployments/promotions
 
+## Setup
+
+Create a Conda Environment (open Conda prompt):
+```
+conda create --name dbconnectappdemo python==3.5
+```
+
+Activate the environment:
+```
+conda activate dbconnectappdemo
+```
+
+IMPORTANT: Open the requirements.txt in the root folder and ensure the version of databrick-connect matches your cluster runtime.
+
+Install the requirements into your environments:
+```
+pip install -r requirements.txt
+```
+
+If you need to setup databricks-connect then run:
+```
+databricks-connect configure
+```
+More help [here](https://datathirst.net/blog/2019/4/20/setup-databricks-connect-on-windows) & [here](https://datathirst.net/blog/2019/3/7/databricks-connect-finally)
+
+## Setup Deployment
+If you would like to deploy from your local PC to Databricks create a file in the root called MyBearerToken.txt and paste in a bearer token from the Databricks UI.
 
 
+Copyright Data Thirst Ltd (2019)

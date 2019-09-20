@@ -1,0 +1,81 @@
+pool:
+  name: Hosted Ubuntu 1604
+variables:
+  python.version: '3.5'
+
+steps:
+- task: UsePythonVersion@0
+  displayName: 'Use Python $(python.version)'
+  inputs:
+    versionSpec: '$(python.version)'
+
+- powershell: |
+   $s = (Get-Content configs/.databricks-connect).replace('<Token>',"$(DatabricksToken)").replace('<ClusterId>',"$(ClusterId)").replace('<OrgId>',"$(DatabricksOrgId)").replace('<location>',"$(Location)")
+   
+   $s | Set-Content configs/.databricks-connect
+   
+   Copy-Item "configs/int.config.json" -Destination "configs/config.json"
+
+  pwsh: true
+  displayName: 'Configure Environment'
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: /home/vsts/'
+  inputs:
+    SourceFolder: configs
+    Contents: |
+     .databricks-connect
+    TargetFolder: /home/vsts/
+    OverWrite: true
+
+- script: |
+   python -m pip install --upgrade pip && pip install -r requirements.txt 
+  displayName: 'Install dependencies'
+
+- script: 'pip install pytest && pytest tests --doctest-modules --junitxml=junit/test-results.xml'
+  workingDirectory: src
+  displayName: pytest
+  continueOnError: true
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results **/test-results.xml'
+  inputs:
+    testResultsFiles: '**/test-results.xml'
+    failTaskOnFailedTests: true
+    testRunTitle: 'Python $(python.version)'
+  condition: succeededOrFailed()
+
+- powershell: |
+   Write-Output "Setting Build Number 0.0.$(Build.BuildNumber)"
+   $s = (Get-Content "./pipelines/__init__.py").replace("0.0.1","0.0.$(Build.BuildNumber)") 
+   $s | Set-Content "./pipelines/__init__.py"
+   
+   $s = (Get-Content "./setup.py").replace("0.0.1","0.0.$(Build.BuildNumber)") 
+   $s | Set-Content "./setup.py"
+
+  pwsh: true
+  displayName: 'Set Build Number in files'
+
+- script: |
+   cd src
+   python setup.py bdist_egg
+  displayName: 'Build Egg'
+
+- task: PowerShell@2
+  displayName: 'Run Build.ps1'
+  inputs:
+    targetType: filePath
+    filePath: ./Build.ps1
+    pwsh: true
+    workingDirectory: src
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    Contents: |
+     bin/**
+     Deploy.ps1
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'

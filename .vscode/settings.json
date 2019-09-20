@@ -1,0 +1,12 @@
+{
+    "files.exclude": {
+        "**/.pytest_cache*": true,
+        "**/__pycache__": true,
+        "**/__init__.py": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/pipelines.egg-info": true,
+        "**/.DS_Store": true
+    },
+    "python.pythonPath": "C:\\Users\\simon\\.conda\\envs\\dbconnectappdemo\\python.exe"
+}

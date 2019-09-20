@@ -18,25 +18,11 @@ def loadConfigFile():
         dirname = os.path.dirname(__file__)
         configFile = os.path.join(dirname, '../../configs/config.json')
     else:
-        configFile = "/MyApp/config.json"
+        # Note this path must match the path in Deploy.ps1 parameter TargetDBFSFolderCode
+        configFile = "/dbfs/DatabricksConnectDemo/Code/config.json"
     with open(configFile, 'r') as f:
         config = json.load(f)
     return config
-
-def getMockSecret(scope,secret):
-    config = loadConfigFile()['MockSecrets']
-    scopeConfig = [x['Secrets'] for x in config if x['Scope'] == scope]
-    return scopeConfig[0][secret]
-
-def getDatabricksSecret(scope,secret):
-    return dbutils.secrets.get("DataThirst1","Test1")
-
-def getSecret(scope,secret):
-    if isLocal():
-        res = getMockSecret(scope,secret)
-    else:
-        res = getDatabricksSecret(scope,secret)
-    return res
 
 def getConfigSetting(settingName):
     config = loadConfigFile()

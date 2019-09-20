@@ -13,4 +13,4 @@ class Test_amazon(object):
     def test_transform_Amazon_newColumn(self):
         df = Test_amazon.mock_extract()
         df = amazon.transform_Amazon(df)
-        assert "time_stamp" in df.columns
+        assert "meta_timestamp" in df.columns

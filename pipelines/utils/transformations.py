@@ -14,7 +14,3 @@ spark = SparkSession.builder.getOrCreate()
 def addDummyColumn(df):
     df = df.withColumn("AnotherColumn", lit(0))
     return df
-
-
-def hello():
-    print('Hello World-2')
