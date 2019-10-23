@@ -20,7 +20,7 @@ The project is designed for:
 
 Create a Conda Environment (open Conda prompt):
 ```
-conda create --name dbconnectappdemo python==3.5
+conda create --name dbconnectappdemo python=3.5
 ```
 
 Activate the environment:
