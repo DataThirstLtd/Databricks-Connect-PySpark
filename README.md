@@ -1,5 +1,3 @@
-[![Build Status](https://dev.azure.com/datathirst/Public-Demos/_apis/build/status/DataThirstLtd.Databricks-Connect-PySpark?branchName=master)](https://dev.azure.com/datathirst/Public-Demos/_build/latest?definitionId=37&branchName=master)
-
 # Developing with Databricks-Connect & Azure DevOps
 A guide of how to build good Data Pipelines with Databricks Connect using best practices.
 Details: https://datathirst.net/blog/2019/9/20/series-developing-a-pyspark-application
