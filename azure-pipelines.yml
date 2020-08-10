@@ -27,6 +27,10 @@ steps:
     OverWrite: true
 
 - script: |
+   python -m pip install pypandoc==1.5 
+  displayName: 'Install pypandoc'
+
+- script: |
    python -m pip install --upgrade pip && pip install -r requirements.txt 
   displayName: 'Install dependencies'
 
